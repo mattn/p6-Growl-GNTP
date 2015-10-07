@@ -1,15 +1,8 @@
 use v6;
 unit class Growl::GNTP;
 
-has Str $.Host;
-has Int $.Port;
-
-method new(
-    Str :$Host? = '127.0.0.1',
-    Int :$Port? = 23053
-) {
-	self.bless(Host => $Host, Port => $Port);
-}
+has Str $.Host = '127.0.0.1';
+has Int $.Port = 23053;
 
 method register(
     Str   :$AppName!,

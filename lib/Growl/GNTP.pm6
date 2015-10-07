@@ -85,6 +85,7 @@ EOT
             $bt ~= "{{$line.trim}}\n";
         }
         die Growl::GNTP::Exception.new(
+            method       => 'NOTIFY',
             error-string => $bt,
         );
     }

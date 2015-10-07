@@ -1,0 +1,14 @@
+{
+  "name" : "Growl::GNTP",
+  "source-url" : "",
+  "perl" : "v6",
+  "provides" : {
+    "Growl::GNTP" : "lib/Growl/GNTP.pm6"
+  },
+  "depends" : [ ],
+  "description" : "",
+  "version" : "*",
+  "authors" : [
+    "Yasuhiro Matsumoto"
+  ]
+}

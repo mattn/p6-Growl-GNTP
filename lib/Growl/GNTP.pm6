@@ -1,34 +1,34 @@
 use v6;
 unit class Growl::GNTP;
 
-has Str $.Host = '127.0.0.1';
-has Int $.Port = 23053;
+has Str $.host = '127.0.0.1';
+has Int $.port = 23053;
 
 method register(
-    Str   :$AppName!,
-    Array :$Notifications!,
+    Str   :$application!,
+    Array :$notifications!,
 ) {
     my $sock = IO::Socket::INET.new(
-        host => self.Host,
-        port => self.Port,
+        host => self.host,
+        port => self.port,
     );
-    my $count = @$Notifications.elems;
+    my $count = @$notifications.elems;
     my $form = qq:heredoc 'EOT';
 GNTP/1.0 REGISTER NONE
 EOT
     $sock.print($form.subst(/\n/, "\r\n", :g));
     $form = qq:heredoc 'EOT';
-Application-Name: {{$AppName}}
+Application-Name: {{$application}}
 Notifications-Count: {{$count.Str}}
 
 EOT
     $sock.print($form.subst(/\n/, "\r\n", :g));
 
-    for @$Notifications {
+    for @$notifications {
         $form = qq:heredoc 'EOT';
-Notification-Name: {{.{'Name'}||'default'}}
-Notification-Display-Name: {{.{'DisplayName'}||'default'}}
-Notification-Enabled: {{.{'Enabled'}||'True'}}
+Notification-Name: {{.{'name'}||'default'}}
+Notification-Display-Name: {{.{'display-name'}||'default'}}
+Notification-Enabled: {{.{'enabled'}||'True'}}
 
 EOT
         $sock.print($form.subst(/\n/, "\r\n", :g));
@@ -47,32 +47,32 @@ EOT
 }
 
 method notify(
-    Str  :$AppName!,
-    Str  :$Name!,
-    Str  :$Title!,
-    Str  :$Text!,
-    Str  :$ID? = '',
-    Bool :$Sticky? = False,
-    Int  :$Priority? = 1,
-    Str  :$Icon? = '',
+    Str  :$application!,
+    Str  :$name!,
+    Str  :$title!,
+    Str  :$text!,
+    Str  :$id? = '',
+    Bool :$sticky? = False,
+    Int  :$priority? = 1,
+    Str  :$icon? = '',
 ) {
     my $sock = IO::Socket::INET.new(
-        host => self.Host,
-        port => self.Port,
+        host => self.host,
+        port => self.port,
     );
     my $form = qq:heredoc 'EOT';
 GNTP/1.0 NOTIFY NONE
 EOT
     $sock.print($form.subst(/\n/, "\r\n", :g));
     $form = qq:heredoc 'EOT';
-Application-Name: {{$AppName}}
-Notification-Name: {{$Name}}
-Notification-Title: {{$Title}}
-Notification-ID: {{$ID}}
-Notification-Priority: {{$Priority}}
-Notification-Text: {{$Text}}
-Notification-Sticky: {{$Sticky.Str}}
-Notification-Icon: {{$Icon}}
+Application-Name: {{$application}}
+Notification-Name: {{$name}}
+Notification-Title: {{$title}}
+Notification-ID: {{$id}}
+Notification-Priority: {{$priority}}
+Notification-Sticky: {{$sticky.Str}}
+Notification-Text: {{$text}}
+Notification-Icon: {{$icon}}
 Notification-Display-Name: {{"default"}}
 EOT
     $sock.print($form.subst(/\n/, "\r\r\n", :g));
@@ -84,9 +84,16 @@ EOT
             last if $line.trim eq '';
             $bt ~= "{{$line.trim}}\n";
         }
-        die $bt;
+        die Growl::GNTP::Exception.new(
+            error-string => $bt,
+        );
     }
     $sock.close;
+}
+
+class Growl::GNTP::Exception is Exception {
+    has $.method;
+    has $.error-string;
 }
 
 =begin pod

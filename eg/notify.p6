@@ -5,14 +5,14 @@ use Growl::GNTP;
 
 my $a = Growl::GNTP.new;
 $a.register(
-    AppName => 'gntp-send',
-    Notifications => [
-		{Name => 'default'},
+    application   => 'gntp-send',
+    notifications => [
+		{name => 'default'},
     ]
 );
 $a.notify(
-	AppName => 'gntp-send',
-	Name => 'default',
-	Title => 'blah',
-	Text => 'BLAH',
+	application => 'gntp-send',
+	name        => 'default',
+	title       => 'blah',
+	text        => 'BLAH',
 );
